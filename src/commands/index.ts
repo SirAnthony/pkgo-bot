@@ -1,13 +1,14 @@
 import * as TelegramBot from 'node-telegram-bot-api'
 import * as conf from '../config'
 import {Messager} from './base'
+import {CmdUser} from './user'
 
 let cmd_types = {
     base: Messager,
 }
+let cmd_private = [CmdUser]
 
 export class Commands {
-    bot: TelegramBot
     chats: any
     private: Array<any>
 
@@ -35,12 +36,18 @@ export class Commands {
         this.private = []
         for (let t in cmd_types)
             this.private.push(new cmd_types[t](bot))
+        for (let p of cmd_private)
+            this.private.push(new p(bot))
     }
     async on_message(msg){
         console.log('MSG: '+JSON.stringify(msg))
-        const chats = msg.chat.type=='private' ?
+        const cmds = msg.chat.type=='private' ?
             this.private : this.chats[msg.chat.id]
-        for (let c of chats)
+        const is_cmd = msg.text.startsWith('/')
+        for (let c of cmds){
+            if (is_cmd && c.type!='cmd' || (!is_cmd && c.type=='cmd'))
+                continue
             await c.process(msg)
+        }
     }
 }
