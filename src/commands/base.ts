@@ -1,7 +1,18 @@
 
 import * as TelegramBot from 'node-telegram-bot-api'
 
-class Base {
+export interface Message {
+    id: number,
+    private: boolean,
+    type: string,
+    text: string,
+    cmd: string,
+    args: Array<string>,
+    user: TelegramBot.User,
+    msg: TelegramBot.Message,
+}
+
+export class Base {
     bot: TelegramBot
     id: number
 
@@ -9,39 +20,41 @@ class Base {
         this.bot = bot
         this.id = id
     }
-    reply(text, msg: any = {}){
-        const id = this.id||msg.chat.id
+    get type(){
+        if (this instanceof Commander)
+            return 'cmd'
+        if (this instanceof Messager)
+            return 'msg'
+        return 'base'
+    }
+    acceptable(msg: Message){ return true }
+    reply(text, msg: Message){
+        const id = this.id||msg.id
         this.bot.sendMessage(id, text)
     }
-    command_echo(args, msg){
-        this.reply(args.join(' '), msg) }
+    command_echo(msg){
+        this.reply(msg.args.join(' '), msg) }
 }
 
 export class Messager extends Base {
-    type = 'msg'
+    acceptable(msg: Message){ return !msg.text.startsWith('/') }
     process(msg){
-        if (msg.text.startsWith('/'))
-            return
-        this.reply('Message received', msg)
+        if (this.acceptable(msg))
+            this.reply('Message received', msg)
     }
 }
 
 export class Commander extends Base {
     commands: Array<string>
-    type = 'cmd'
 
-    async process(msg){
-        const {text} = msg
-        // TODO: use entities
-        if (!text.startsWith('/'))
-            return
-        const [cmd, ...args] = text.slice(1).split(' ')
-        if (!this.commands.includes(cmd))
-            return this.cmd_error('No such command', cmd, msg)
-        return await this[`command_${cmd}`](args, msg)
+    acceptable(msg: Message){
+        return msg.cmd && this.commands.includes(msg.cmd) }
+    async process(msg: Message){
+        if (this.acceptable(msg))
+            return await this[`command_${msg.cmd}`](msg)
     }
     cmd_error(info, cmd, msg){
-        if (msg.chat.type=='private')
+        if (msg.private)
             this.reply(`Command error: ${cmd}: ${info}`, msg)
     }
 }

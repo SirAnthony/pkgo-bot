@@ -4,15 +4,18 @@ import * as TelegramBot from 'node-telegram-bot-api'
 
 let user_db, users_cache = {}
 
-export async function get_user(info: TelegramBot.User){
-    if (info.id in users_cache)
-        return users_cache[info.id]
-    const user = new User()
-    await user.load(info)
-    return users_cache[info.id] = user
-}
-
 export class User {
+    static async get(info: TelegramBot.User){
+        if (info.id in users_cache)
+            return users_cache[info.id]
+        const user = new User()
+        try { await user.load(info) }
+        catch(e){
+            console.error(e.stack)
+            return null
+        }
+        return users_cache[info.id] = user
+    }
     async load(info: TelegramBot.User){
         if (!user_db)
             user_db = await mongodb.open('users')

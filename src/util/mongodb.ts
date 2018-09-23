@@ -29,7 +29,7 @@ function err_handler(db, type, err, selector, update?){
 
 function log_query(query, name, selector, update, res){
     if (!conf.debug || !conf.debug.db)
-        return
+        return LOG('Mongo debug disabled')
     LOG('mongodb %s db %s selector: %O, update: %O, res: %O', query,
         name, selector, update, res);
 }
@@ -83,11 +83,7 @@ export async function find_one(db, selector, _opt: any = {}){
     let opt = !_opt ? {} : _.omit(_opt, 'read_preference')
     if (read_preference)
         opt.readPreference = new mongo.ReadPreference(read_preference, null)
-    let item
-    try { return await db.collection.findOne(selector, opt) }
-    catch(e){ err_handler(db, 'findOne', e, selector) }
-    log_query('findOne', db.name, {selector, opt}, null, item);
-    return item
+    return await try_mongo(db, 'findOne', selector, opt)
 }
 
 export async function find_all(db, selector = {}, opt: any = {}){
