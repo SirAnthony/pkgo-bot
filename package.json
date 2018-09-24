@@ -33,6 +33,7 @@
     "@types/node": "^10.10.1",
     "@types/node-telegram-bot-api": "^0.30.3",
     "nodemon": "^1.18.4",
+    "mysql": "^2.16.0",
     "typescript": "^3.0.3"
   }
 }

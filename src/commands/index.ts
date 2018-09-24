@@ -6,6 +6,7 @@ import {Dex} from './dex'
 
 let cmd_types = {
     base: CmdBase.Messager,
+    dex: Dex,
 }
 let cmd_private = [CmdUser, Dex]
 

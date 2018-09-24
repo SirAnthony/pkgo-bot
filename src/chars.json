@@ -1,0 +1,28 @@
+{
+    "team": {
+        "blude": "\ud83d\udc99",
+        "red": "\u2764",
+        "yellow": "\ud83d\udc9b",
+        "cancel": "\ud83d\udc94",
+        "done": "\u1f4aa",
+        "unknown": "\u1f680"
+    },
+    "emoji": {
+        "refresh": "\u1f504",
+        "here": "\u1f4cd",
+        "late": "\u1f40c",
+        "group": "\u1f465",
+        "warn": "\u26a0",
+        "disk": "\u1f4be"
+    },
+    "weather": {
+        "sunny": "\u2600",
+        "clear": "\u2728",
+        "rain": "\u2614",
+        "partly cloudy": "\u26c5",
+        "cloudy": "\u2601",
+        "windy": "\ud83c\udf2a",
+        "snow": "\u26c4",
+        "fog": "\ud83c\udf2b"
+    }
+}

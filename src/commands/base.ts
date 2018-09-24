@@ -28,9 +28,9 @@ export class Base {
         return 'base'
     }
     acceptable(msg: Message){ return true }
-    reply(text, msg: Message){
+    reply(text, msg: Message, opt?){
         const id = this.id||msg.id
-        this.bot.sendMessage(id, text)
+        this.bot.sendMessage(id, text, opt)
     }
     command_echo(msg){
         this.reply(msg.args.join(' '), msg) }

@@ -10,9 +10,13 @@ export class Dex extends Commander {
             return this.reply('Not found', msg)
         if (!Array.isArray(pok))
             pok = [pok]
+        if (pok.length>1)
+            this.reply(`Found ${pok.length} entries, use page number`, msg)
+        const page = msg.args[1]||0
+        const per_page = msg.private ? 5 : 1
+        pok = pok.slice(per_page*page, per_page*(page+1))
         for (let p of pok){
-            this.reply(`<b>${p.name}</b>: (#${p.id})\n`+
-                `cp: ${p.cp}`, msg)
+            this.reply(p.raid_data, msg, {parse_mode: 'Markdown'})
         }
     }
 }

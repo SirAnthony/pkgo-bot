@@ -29,9 +29,9 @@ function err_handler(db, type, err, selector, update?){
 
 function log_query(query, name, selector, update, res){
     if (!conf.debug || !conf.debug.db)
-        return LOG('Mongo debug disabled')
+        return
     LOG('mongodb %s db %s selector: %O, update: %O, res: %O', query,
-        name, selector, update, res);
+        name, selector, update, res&&res.result||res);
 }
 
 function _clean_void(obj){
