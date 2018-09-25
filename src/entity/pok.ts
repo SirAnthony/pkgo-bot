@@ -12,10 +12,12 @@ async function get_pok_id(id: number){
     if (!pok_db)
         pok_db = await mongodb.open('poks')
     let res = await mongodb.find_one(pok_db, {id})
+    if (!res)
+        return by_number[id] = null
     return by_number[id] = new Pok(res)
 }
 
-async function get_pok_name(name: string){
+async function get_pok_name(name: string, opt?: any){
     let id = by_name[name]
     if (id===null)
         return null
@@ -43,6 +45,8 @@ async function get_pok_name(name: string){
     by_name[name] = res.map(f=>f.id)
     let ret = []
     for (let r of res){
+        if (opt && opt.valid && r.id>9000)
+            continue
         if (!(r.id in by_number))
             by_number[r.id] = new Pok(r)
         ret.push(by_number[r.id])
@@ -52,10 +56,10 @@ async function get_pok_name(name: string){
 
 export class Pok {
     info: any
-    static async get(q: string, user?: TelegramBot.User){
+    static async get(q: string, opt?: any){
         if (/^\d+$/.test(q))
             return await get_pok_id(+q)
-        return await get_pok_name(q)
+        return await get_pok_name(q, opt)
     }
     constructor(info){
         this.info = info
